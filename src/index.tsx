@@ -1,2 +1,2 @@
 export { AdBlockWrapper } from "./component";
-export { useIsAdBlocker } from "./hook";
+export { useAdBlockDetection } from "./hook";

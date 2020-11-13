@@ -46,7 +46,7 @@ const getStorageFunctions = (type: StorageType) => {
   }
 }
 
-const useIsAdBlocker = (config?: Config): ReturnArr => {
+const useAdBlockDetection = (config?: Config): ReturnArr => {
   const {storageType = 'cookies', adUrl = AD_URL, hasBlockerCb = null} = config || {};
   const [isAdBlocker, setIsAdBlocker] = React.useState<boolean | undefined>(undefined);
   // check for window and initialize storageStatus and storageSetter to true and false respectively (SSR catch) until we have it
@@ -85,4 +85,4 @@ const useIsAdBlocker = (config?: Config): ReturnArr => {
   return {showComponent, storageSetter, isAdBlocker, storageStatus };
 };
 
-export {useIsAdBlocker};
+export {useAdBlockDetection};

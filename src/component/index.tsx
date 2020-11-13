@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useIsAdBlocker } from '../hook';
+import { useAdBlockDetection } from '../hook';
 
 type StorageType = 'cookies' | 'local' | 'session';
 
@@ -10,7 +10,7 @@ type WrapperProps = {
 const AdBlockWrapper: React.FC<WrapperProps> = ({
   children,
 }) => {
-  const {showComponent}= useIsAdBlocker();
+  const {showComponent}= useAdBlockDetection();
 
   return <>{showComponent && children}</>;
 };

@@ -33,16 +33,16 @@
     "singleQuote": true,
     "trailingComma": "es5"
   },
-  "name": "useadblockerdetection",
+  "name": "use-ad-block-detection",
   "author": "Sean Dillon",
-  "module": "dist/useadblockerdetection.esm.js",
+  "module": "dist/use-ad-block-detection.esm.js",
   "size-limit": [
     {
-      "path": "dist/useadblockerdetection.cjs.production.min.js",
+      "path": "dist/use-ad-block-detection.cjs.production.min.js",
       "limit": "10 KB"
     },
     {
-      "path": "dist/useadblockerdetection.esm.js",
+      "path": "dist/use-ad-block-detection.esm.js",
       "limit": "10 KB"
     }
   ],

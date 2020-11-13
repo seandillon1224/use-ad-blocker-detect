@@ -1,11 +1,11 @@
 import * as React from 'react';
-import { useIsAdBlocker } from '../.';
+import { useAdBlockDetection } from '../.';
 import './Modal.module.css';
 
 const someFunc = () => console.log('called');
 
 const Modal = () => {
-  const {showComponent, storageSetter} = useIsAdBlocker({storageType: 'session', hasBlockerCb: someFunc});
+  const {showComponent, storageSetter} = useAdBlockDetection({storageType: 'session', hasBlockerCb: someFunc});
   const [isOpen, setIsOpen] = React.useState<boolean>(true);
 
   const handleClose = () => {

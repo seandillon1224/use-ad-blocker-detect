@@ -1,160 +1,106 @@
-# TSDX React User Guide
+# React Hook/Component - useAdBlockDetection
 
-Congrats! You just saved yourself hours of work by bootstrapping this project with TSDX. Let’s get you oriented with what’s here and how to use it.
+## Motivation
 
-> This TSDX setup is meant for developing React component libraries (not apps!) that can be published to NPM. If you’re looking to build a React-based app, you should use `create-react-app`, `razzle`, `nextjs`, `gatsby`, or `react-static`.
+In many cases, there is a use case that calls for finding out whether a user has an Ad Blocker turned on.  A common example is that many times the functionality of video players is degraded or altogether rendered unusable when an Ad Blocker is present.
 
-> If you’re new to TypeScript and React, checkout [this handy cheatsheet](https://github.com/sw-yx/react-typescript-cheatsheet/)
-
-## Commands
-
-TSDX scaffolds your new library inside `/src`, and also sets up a [Parcel-based](https://parceljs.org) playground for it inside `/example`.
-
-The recommended workflow is to run TSDX in one terminal:
-
+The useAdBlockDetection package is used to determine whether or not a user is using an Ad Blocker, and add some utilities surrounding this.
+## Install
+To install via NPM.
 ```bash
-npm start # or yarn start
+npm install useAdBlockDetection
 ```
+## Usage
+### Wrapper Component
+For simple usage, i.e. you just want to show some JSX based on there being an Ad Blocker detected, you can (and probably should) just use the Component import, `AdBlockWrapper`.
 
-This builds to `/dist` and runs the project in watch mode so any edits you save inside `src` causes a rebuild to `/dist`.
+Example Usage:
 
-Then run the example inside another:
+```javascript
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
+import {AdBlockWrapper} from "useAdBlockDetection";
 
-```bash
-cd example
-npm i # or yarn to install dependencies
-npm start # or yarn start
+const App = () => {
+  return (
+    <div>
+      <AdBlockWrapper>
+        <div>If you are seeing me, there is an Ad Blocker.</div>
+      </AdBlockWrapper>
+    </div>
+  );
+};
+
+ReactDOM.render(<App />, document.getElementById('root'));
 ```
+## Hook
 
-The default example imports and live reloads whatever is in `/dist`, so if you are seeing an out of date component, make sure TSDX is running in watch mode like we recommend above. **No symlinking required**, we use [Parcel's aliasing](https://parceljs.org/module_resolution.html#aliases).
+If you need more control and want to hook into some helpful utils, then the hook-based implementation may be a better bet.
 
-To do a one-off build, use `npm run build` or `yarn build`.
+This hook, ```useAdBlockDetection```, accepts a completely optional config and returns some helpful properties in array format.
+### Options Config
 
-To run tests, use `npm test` or `yarn test`.
+Option | Type | Default | Description
+------------ | ------------- | ------------- | -------------
+```storageType``` | string (one of ["cookies", "local", "session"]) | 'cookies' | In many cases you may want to know if a user has already been presented some sort of alert/modal/toast regarding their Ad Blocker.  By keeping track of this 'already seen' boolean, we can limit the user's exposure to any sort of alert.  By default we store this boolean value as a cookie, but this can be overridden to use localStorage or sessionStorage.  **NOTE**: This will not be stored automatically, more on that in the hooks's return values below.
+```adUrl``` | string | Generic Ad Script | Currently, we send a dummy request out to a known generic ad script (Google) to capture the rejection.  As ad blockers get smarter, and scripts change, there is a chance this may either be deprecated or somehow be 'caught' by the ad blockers.  This allows for an override by sending in your own outside ad script to send a request to and attempt to trigger, and capture the ad blocker's existence.  
+```hasBlockerCb``` | function | null | Callback function that will be called when an ad blocker is detected.  **NOTE**: This will fire every time an Ad Blocker is detected on page load, with no regard for the ```storageStatus``` boolean.  In the event that, for example, you are attempting to capture analytics as to how many times *new* users have Ad Blocker's enabled this can be used in tandem with ```storageStatus```.
 
-## Configuration
+### Result
 
-Code quality is set up for you with `prettier`, `husky`, and `lint-staged`. Adjust the respective fields in `package.json` accordingly.
+After being called, the ```useAdBlockDetection``` hook will return an object with the following properties.
 
-### Jest
+Property | Type | Description
+------------ | ------------- | ------------- 
+```showComponent``` | boolean OR undefined | Boolean value that will only hold a truthy value when: ```isAdBlocker``` is true  and we have no ```storageType``` value. i.e. The user has an Ad Blocker and we have not called ```storageSetter```.
+```storageSetter``` | function | Function that when called, will set  ```new Date().getTime() ``` value to the selected ```storageType```.  The date string is both truthy so that showComponent will turn false when this is called, and allows for more advanced checks if you want to show something based on how long ago a user had this value stored.
+```isAdBlocker``` | boolean OR undefined | A boolean that indicates whether there is an Ad Blocker detected.  Initially undefined until finished checking for Ad Blocker.
+```storageStatus``` | string OR null |  If ```storageSetter``` has been called, this will be a stringified ```new Date().getTime() ```, otherwise null.
 
-Jest tests are set up to run with `npm test` or `yarn test`.
+Example Usage:
 
-### Bundle analysis
+```javascript
+import * as React from 'react';
+import {useIsAdBlocker} from 'useIsAdBlocker';
+import useOutsideClick from 'useOutsideClick'; /* mock outside click hook */
+import css from './style.css';
 
-Calculates the real cost of your library using [size-limit](https://github.com/ai/size-limit) with `npm run size` and visulize it with `npm run analyze`.
-
-#### Setup Files
-
-This is the folder structure we set up for you:
-
-```txt
-/example
-  index.html
-  index.tsx       # test your component here in a demo app
-  package.json
-  tsconfig.json
-/src
-  index.tsx       # EDIT THIS
-/test
-  blah.test.tsx   # EDIT THIS
-.gitignore
-package.json
-README.md         # EDIT THIS
-tsconfig.json
-```
-
-#### React Testing Library
-
-We do not set up `react-testing-library` for you yet, we welcome contributions and documentation on this.
-
-### Rollup
-
-TSDX uses [Rollup](https://rollupjs.org) as a bundler and generates multiple rollup configs for various module formats and build settings. See [Optimizations](#optimizations) for details.
-
-### TypeScript
-
-`tsconfig.json` is set up to interpret `dom` and `esnext` types, as well as `react` for `jsx`. Adjust according to your needs.
-
-## Continuous Integration
-
-### GitHub Actions
-
-Two actions are added by default:
-
-- `main` which installs deps w/ cache, lints, tests, and builds on all pushes against a Node and OS matrix
-- `size` which comments cost comparison of your library on every pull request using [`size-limit`](https://github.com/ai/size-limit)
-
-## Optimizations
-
-Please see the main `tsdx` [optimizations docs](https://github.com/palmerhq/tsdx#optimizations). In particular, know that you can take advantage of development-only optimizations:
-
-```js
-// ./types/index.d.ts
-declare var __DEV__: boolean;
-
-// inside your code...
-if (__DEV__) {
-  console.log('foo');
+// by passing this function into our config object as hasBlockerCb, we call this each time that the useIsAdBlocker hook sees an Ad Blocker and fire off our analytics capturing in the process
+const analyticsTrack = () => {
+    // do some analytics things in here
 }
+
+const Modal = () => {
+  const modalRef = React.useRef(null);
+  // by passing session as storageType, we're theoretically choosing to show this modal every time the user closes this browser tab and re-opens the url in that browser - using 'local' or the default 'cookies' would have a longer term effect on when to show.
+  const { showComponent, storageSetter } = useIsAdBlocker({storageType: 'session', hasBlockerCb: analyticsTrack});
+  const [isOpen, setIsOpen] = React.useState(true);
+  
+  // if we close the modal either by the button or via clicking outside, track that we have shown our user that the site may not run as smoothly with an Ad Blocker so we do not show them it again.
+  const handleClose = () => {
+    storageSetter();
+    setIsOpen(false);
+  };
+  // handle clicks outside of the modal the same way we handle the Close Modal button
+  useOutsideClick(modalRef, () => {
+    handleClose();
+  });
+
+  return showComponent && isOpen && (
+    <div className="modal">
+      <div ref={modalRef} className="modalMain">
+        <h1>Ad Blocker detected, our videos may not work as smoothly with this enabled.</h1>
+        <button type="button" onClick={handleClose}>
+          CLOSE MODAL
+        </button>
+      </div>
+    </div>
+  );
+};
+
+ReactDOM.render(<Modal />, document.getElementById('root'));
+
 ```
 
-You can also choose to install and use [invariant](https://github.com/palmerhq/tsdx#invariant) and [warning](https://github.com/palmerhq/tsdx#warning) functions.
 
-## Module Formats
 
-CJS, ESModules, and UMD module formats are supported.
-
-The appropriate paths are configured in `package.json` and `dist/index.js` accordingly. Please report if any issues are found.
-
-## Deploying the Example Playground
-
-The Playground is just a simple [Parcel](https://parceljs.org) app, you can deploy it anywhere you would normally deploy that. Here are some guidelines for **manually** deploying with the Netlify CLI (`npm i -g netlify-cli`):
-
-```bash
-cd example # if not already in the example folder
-npm run build # builds to dist
-netlify deploy # deploy the dist folder
-```
-
-Alternatively, if you already have a git repo connected, you can set up continuous deployment with Netlify:
-
-```bash
-netlify init
-# build command: yarn build && cd example && yarn && yarn build
-# directory to deploy: example/dist
-# pick yes for netlify.toml
-```
-
-## Named Exports
-
-Per Palmer Group guidelines, [always use named exports.](https://github.com/palmerhq/typescript#exports) Code split inside your React app instead of your React library.
-
-## Including Styles
-
-There are many ways to ship styles, including with CSS-in-JS. TSDX has no opinion on this, configure how you like.
-
-For vanilla CSS, you can include it at the root directory and add it to the `files` section in your `package.json`, so that it can be imported separately by your users and run through their bundler's loader.
-
-## Publishing to NPM
-
-We recommend using [np](https://github.com/sindresorhus/np).
-
-## Usage with Lerna
-
-When creating a new package with TSDX within a project set up with Lerna, you might encounter a `Cannot resolve dependency` error when trying to run the `example` project. To fix that you will need to make changes to the `package.json` file _inside the `example` directory_.
-
-The problem is that due to the nature of how dependencies are installed in Lerna projects, the aliases in the example project's `package.json` might not point to the right place, as those dependencies might have been installed in the root of your Lerna project.
-
-Change the `alias` to point to where those packages are actually installed. This depends on the directory structure of your Lerna project, so the actual path might be different from the diff below.
-
-```diff
-   "alias": {
--    "react": "../node_modules/react",
--    "react-dom": "../node_modules/react-dom"
-+    "react": "../../../node_modules/react",
-+    "react-dom": "../../../node_modules/react-dom"
-   },
-```
-
-An alternative to fixing this problem would be to remove aliases altogether and define the dependencies referenced as aliases as dev dependencies instead. [However, that might cause other problems.](https://github.com/palmerhq/tsdx/issues/64)

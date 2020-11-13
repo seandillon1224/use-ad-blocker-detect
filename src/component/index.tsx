@@ -9,9 +9,8 @@ type WrapperProps = {
 
 const AdBlockWrapper: React.FC<WrapperProps> = ({
   children,
-  storageType = 'cookies',
 }) => {
-  const [showComponent] = useIsAdBlocker({ storageType });
+  const {showComponent}= useIsAdBlocker();
 
   return <>{showComponent && children}</>;
 };

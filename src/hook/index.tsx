@@ -95,7 +95,7 @@ const useAdBlockDetection = (config?: Config): ReturnArr => {
     }
 
     if (isAdBlocker === undefined) checkAdBlocker();
-  }, [isAdBlocker, storageType]);
+  }, [isAdBlocker, storageType, adUrl, hasBlockerCb]);
 
   const showComponent = isAdBlocker && !storageStatus;
   return { showComponent, storageSetter, isAdBlocker, storageStatus };

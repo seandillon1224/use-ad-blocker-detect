@@ -7,10 +7,8 @@ type WrapperProps = {
   storageType?: StorageType;
 };
 
-const AdBlockWrapper: React.FC<WrapperProps> = ({
-  children,
-}) => {
-  const {showComponent}= useAdBlockDetection();
+const AdBlockWrapper: React.FC<WrapperProps> = ({ children }) => {
+  const { showComponent } = useAdBlockDetection();
 
   return <>{showComponent && children}</>;
 };

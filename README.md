@@ -1,4 +1,4 @@
-# React Hook/Component - useAdBlockDetection
+# React Hook/Component - use-ad-block-detection
 
 ## Motivation
 
@@ -8,7 +8,7 @@ The useAdBlockDetection package is used to determine whether or not a user is us
 ## Install
 To install via NPM.
 ```bash
-npm install useAdBlockDetection
+npm install use-ad-block-detection
 ```
 ## Usage
 ### Wrapper Component
@@ -19,7 +19,7 @@ Example Usage:
 ```javascript
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import {AdBlockWrapper} from "useAdBlockDetection";
+import {AdBlockWrapper} from "use-ad-block-detection";
 
 const App = () => {
   return (
@@ -61,11 +61,11 @@ Example Usage:
 
 ```javascript
 import * as React from 'react';
-import {useIsAdBlocker} from 'useIsAdBlocker';
+import {useAdBlockDetection} from 'use-ad-block-detection';
 import useOutsideClick from 'useOutsideClick'; /* mock outside click hook */
 import css from './style.css';
 
-// by passing this function into our config object as hasBlockerCb, we call this each time that the useIsAdBlocker hook sees an Ad Blocker and fire off our analytics capturing in the process
+// by passing this function into our config object as hasBlockerCb, we call this each time that the useAdBlockDetection hook sees an Ad Blocker and fire off our analytics capturing in the process
 const analyticsTrack = () => {
     // do some analytics things in here
 }
@@ -73,7 +73,7 @@ const analyticsTrack = () => {
 const Modal = () => {
   const modalRef = React.useRef(null);
   // by passing session as storageType, we're theoretically choosing to show this modal every time the user closes this browser tab and re-opens the url in that browser - using 'local' or the default 'cookies' would have a longer term effect on when to show.
-  const { showComponent, storageSetter } = useIsAdBlocker({storageType: 'session', hasBlockerCb: analyticsTrack});
+  const { showComponent, storageSetter } = useAdBlockDetection({storageType: 'session', hasBlockerCb: analyticsTrack});
   const [isOpen, setIsOpen] = React.useState(true);
   
   // if we close the modal either by the button or via clicking outside, track that we have shown our user that the site may not run as smoothly with an Ad Blocker so we do not show them it again.

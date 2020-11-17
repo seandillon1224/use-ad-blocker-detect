@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useAdBlockDetection } from '../.';
+import { useAdBlockDetection } from '../src/hook';
 import './Modal.module.css';
 
 const someFunc = () => console.log('called');

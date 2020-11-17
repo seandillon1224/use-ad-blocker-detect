@@ -34,7 +34,20 @@
     "trailingComma": "es5"
   },
   "name": "use-ad-block-detection",
-  "author": "Sean Dillon",
+  "author": "https://github.com/seandillon1224",
+  "keywords": [
+    "react",
+    "ad-block",
+    "adblock",
+    "adblockdetect",
+    "ad-block-detect",
+    "adblock-detect",
+    "ad",
+    "block",
+    "detect",
+    "detection",
+    "ad blocker"
+  ],
   "module": "dist/use-ad-block-detection.esm.js",
   "size-limit": [
     {

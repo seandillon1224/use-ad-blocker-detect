@@ -2,7 +2,7 @@ import 'react-app-polyfill/ie11';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import Modal from './modal';
-import {AdBlockWrapper} from "../.";
+import {AdBlockWrapper} from '../src/component';
 
 const App = () => {
   return (
